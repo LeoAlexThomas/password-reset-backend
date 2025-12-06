@@ -114,8 +114,9 @@ export const forgotPassword = async (req, res) => {
       message: "mail sent to given mail address",
     });
   } catch (error) {
+    console.log("Error: ", error);
     res.status(500).json({
-      message: "Cannot send mail, Error in sending mail",
+      message: `Cannot send mail, Error in sending mail: ${error}`,
     });
   }
 };
