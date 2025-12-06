@@ -104,12 +104,12 @@ export const forgotPassword = async (req, res) => {
     await user.save();
 
     // Sending reset link mail to user mail id
-    await sendEmail(
+    const response = await sendEmail(
       email,
       "Reset Password Pin",
       `Here is link for password reset ${frontendBaseUrl}/resetPassword?token=${jwtToken}&pin=${resetPin}, this link is valid upto 1 hour from mail received`
     );
-
+    console.log("Email Sending response:", response);
     res.status(200).json({
       message: "mail sent to given mail address",
     });
