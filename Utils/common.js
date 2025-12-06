@@ -1,4 +1,4 @@
-export const frontendBaseUrl = "http://localhost:5173";
+export const frontendBaseUrl = "https://adorable-chebakia-4c15a9.netlify.app";
 
 export const getRandomNumber = (min, max) => {
   min = Math.ceil(min);
