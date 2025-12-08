@@ -21,7 +21,7 @@ connectDB();
 
 // Default Route config
 app.get("/", (req, res) => {
-  res.status(200).json("Welcome to Password rest backend service");
+  res.status(200).json("Welcome to Password reset backend service");
 });
 
 app.use("/api/auth", AuthRoutes);
