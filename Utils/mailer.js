@@ -1,27 +1,24 @@
-import nodemailer from "nodemailer";
+import * as brevo from "@getbrevo/brevo";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-  service: "Gmail",
-  host: "smtp.ethereal.email",
-  port: 587,
-  secure: false, // true for 465, false for other ports
-  auth: {
-    user: process.env.PASS_MAIL,
-    pass: process.env.PASS_KEY,
-  },
-});
+const sendEmail = async ({ to, subject, htmlText }) => {
+  let apiInstance = new brevo.TransactionalEmailsApi();
 
-const sendEmail = async (to, subject, text) => {
-  const mailOptions = {
-    from: process.env.PASS_MAIL,
-    to,
-    subject,
-    text,
+  apiInstance.setApiKey(
+    brevo.TransactionalEmailsApiApiKeys.apiKey,
+    process.env.MAIL_API_KEY
+  );
+
+  const sendSmtpEmail = {
+    to: [{ email: to }],
+    sender: { email: process.env.PASS_MAIL },
+    subject: subject,
+    htmlContent: htmlText,
   };
-  return transporter.sendMail(mailOptions);
+
+  return await apiInstance.sendTransacEmail(sendSmtpEmail);
 };
 
 export default sendEmail;

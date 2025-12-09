@@ -1,8 +1,8 @@
 import User from "../Models/userSchema.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import sendEmail from "../Utils/mailer.js";
 import { frontendBaseUrl, getRandomNumber } from "../Utils/common.js";
+import sendEmail from "../Utils/mailer.js";
 
 // Register User
 export const registerUser = async (req, res) => {
@@ -104,17 +104,16 @@ export const forgotPassword = async (req, res) => {
     await user.save();
 
     // Sending reset link mail to user mail id
-    const response = await sendEmail(
-      email,
-      "Reset Password Pin",
-      `Here is link for password reset ${frontendBaseUrl}/resetPassword?token=${jwtToken}&pin=${resetPin}, this link is valid upto 1 hour from mail received`
-    );
-    console.log("Email Sending response:", response);
+    await sendEmail({
+      to: email,
+      subject: "Reset Password Link",
+      htmlText: `Here is link for password reset <a href="${frontendBaseUrl}/resetPassword?token=${jwtToken}&pin=${resetPin}">Reset Password</a>, this link is valid upto <b>1 hour</b> from mail received`,
+    });
+
     res.status(200).json({
       message: "mail sent to given mail address",
     });
   } catch (error) {
-    console.log("Error: ", error);
     res.status(500).json({
       message: `Cannot send mail, Error in sending mail: ${error}`,
     });
@@ -146,10 +145,7 @@ export const verifyResetPin = async (req, res) => {
       });
       return;
     }
-    // Resetting resetPin value and resetPinValidity value to null current pin i validated
-    user.resetPin = null;
-    user.resetPinValidity = null;
-    await user.save();
+
     res.status(200).json({
       message: "Pin is verified successfully",
     });
@@ -181,6 +177,10 @@ export const resetPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 12);
     // Storing new hashed password to user info
     user.password = hashedPassword;
+    // Resetting resetPin value and resetPinValidity value to null current pin after password is changed
+    user.resetPin = null;
+    user.resetPinValidity = null;
+
     await user.save();
     res.status(200).json({
       message: "Password changed successfully",
